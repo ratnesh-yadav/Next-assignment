@@ -4,17 +4,19 @@ import { Task } from '@/types/task';
 import "../app/globals.css"
 
 const Home = () => {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [filter, setFilter] = useState('all');
-  const [newTask, setNewTask] = useState('') 
-  const [newDescription, setNewDescription] = useState('')
-  const [activeTask, setActiveTask] = useState (null)  
-  const [newTaskMenu, setNewTaskMenu] = useState(false)
+  const [tasks, setTasks] = useState<Task[]>([]);//Array to store Tasks
+  const [filter, setFilter] = useState('all');//Store the current selected filter for Filter Section
+  const [newTask, setNewTask] = useState('') // Store new task title as String
+  const [newDescription, setNewDescription] = useState('') //Store new Task decsription as String
+  const [activeTask, setActiveTask] = useState (null)  //Store which Task is selected bu user to perform actions like delete task or change status
+  const [newTaskMenu, setNewTaskMenu] = useState(false)// Store states of new Task menu
 
 useEffect(() => {
     fetchTasks();
   }, [filter]);
 
+
+   //A function to call API in order to fetch Tasks from db and make it visible on the UI
   const fetchTasks = async () => {
     try{
     const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/getTask?filter=${filter}`);
@@ -31,21 +33,24 @@ else {
   setTasks([]); 
 }
     } catch (err) {
-        console.log("---16----", err)
+        console.log("---36----", err)
     }
   };
 
+  // A fucntion to call API in order to add new Task to DB
   const addTask = async () =>{
    try{
     await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/createTask`, {title: newTask, description: newDescription});
-    setNewTask('') 
-    setNewDescription('') 
-    fetchTasks() 
+    setNewTask('') // Clear newTask
+    setNewDescription('') //Clera newDescription
+    fetchTasks() // Callling fetchTasks
 }   catch (err) {
-    console.log("---37---", err)
+    console.log("---47---", err)
 }
   }
 
+
+   // A function to call API in order to change the states of Task, like done, in progress and etc.
   const toggleComplete = async (id: any, status: any) => {
     try{
     await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/${id}`, {
@@ -57,6 +62,7 @@ else {
   }
   };
 
+   // A function to call API in order to delete a task with desiret TASK ID
   const deleteTask = async (id: any) => {
     try{
     await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/${id}`);
@@ -66,7 +72,7 @@ else {
     }
   };
 
-console.log(tasks,"---82---")
+ // A Function for filtering the Tasks in the UI
 const filteredTasks = tasks.filter((task) =>{
     if ( filter === 'all') return true;
     return task.status === filter
@@ -177,7 +183,7 @@ const filteredTasks = tasks.filter((task) =>{
                 </div>
               </div>
 
-              {/* Modal */}
+              {/* Full Screen pop up Modal for actions menu */}
               {activeTask === task._id && (
                 <div className="fixed inset-0 bg-gray-100 bg-opacity-95 flex flex-col justify-center items-center p-4 z-20">
                   <div className="grid grid-flow-row space-y-2 text-balse">
